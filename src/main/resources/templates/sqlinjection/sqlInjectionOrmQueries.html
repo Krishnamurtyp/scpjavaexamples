@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>SCP Java Examples</title>
+        <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+    </head>
+    <body>
+        <h1 class="mainTitle">SQL Injection Vulnerability</h1>
+        <h3>SQL Injection Attack</h3>
+        <div class="section">
+            <p>In this web applications there is a method named <b>loginUser</b> in the <b>SqlInjectionVulnerability</b> class.  This method simulates a user logging into a system.
+                " The method is passed a valid username and password, and it returns the user object, if a matching row in the database is found. If none is found the method returns null.  </p>
+            The code listing is below:
+            <pre>
+                <code>
+                    public User loginUser(String userName, String userPassword) {
+                        try {
+                            User user = jdbcTemplate.queryForObject("SELECT * FROM users WHERE userName='userName' AND
+                            userPassword='userPassword', BeanPropertyRowMapper.newInstance(User.class));
+                            return user;
+                        } catch (IncorrectResultSizeDataAccessException e) {
+                            return null;
+                        }
+                    }
+                </code>
+            </pre>
+            <p>When a userName of "userName1" and a userPassword of "password1" are passed to the method it works correctly and
+                returns the User object for userName1. It does this by creating the following SELECT statement:</p>
+            <p class="section"><b>SELECT * FROM users WHERE userName='userName1' AND userPassword='password1'</b></p>
+            <p>
+                The following User object is returned:
+            </p>
+            <table>
+                <tr>
+                    <th>User Id</th><th>User Name</th><th>User Password</th><th>User Email Address</th>
+                </tr>
+                <tr>
+                    <td th:text="${normalCallToLogin?.id}"></td>
+                    <td th:text="${normalCallToLogin?.userName}"></td>
+                    <td th:text="${normalCallToLogin?.userPassword}"></td>
+                    <td th:text="${normalCallToLogin?.userEmailAddress}"></td>
+                </tr>
+            </table>
+
+            <p>However, this method is susceptible to SQL Injection. If a userName of "administrator' --" and a password of "" is
+            passed to the method. The method returns a User object for administrator without a password therefore by passing
+            authentication.</p>
+            <p>This is because the SQL query statement is made up of concatenated strings. Therefore, a userName can be created that
+            will comment out the last half of the query statement and only use the userName in the Select statement. The SELECT
+            statement created
+            by the SQL Injection is:</p>
+            <p class="section"><b>SELECT * FROM users WHERE userName='administrator'</b></p>
+            <p>
+                The following User object is returned:
+            </p>
+            <table>
+                <tr>
+                    <th>User Id</th><th>User Name</th><th>User Password</th><th>User Email Address</th>
+                </tr>
+                <tr>
+                    <td th:text="${sqlInjectionCallToLogin?.id}"></td>
+                    <td th:text="${sqlInjectionCallToLogin?.userName}"></td>
+                    <td th:text="${sqlInjectionCallToLogin?.userPassword}"></td>
+                    <td th:text="${sqlInjectionCallToLogin?.userEmailAddress}"></td>
+                </tr>
+            </table>
+        </div>
+        <h3>SQL Injection Mediation By Parameterized SQL Statement</h3>
+        <div class="section">
+            <p>To mediate the SQL injection vulnerability, parameterized queries were created. In this web application there is
+            another method named <b>loginUser</b>
+            in the <b>SQLInjectionMitigation</b> class that uses a parameterized SQL statement to insure SQL injection does not
+            occur. A parameterized query is a query in which placeholders are used for parameters and the parameter values are
+            supplied at execution time.
+            Just like the <b>loginUser</b> method in the <b>SqlInjectionVulnerability</b> class, this method is passed a valid
+            username and password and it returns the user object.
+             </p>
+            The code listing is below:
+            <pre>
+                <code>
+                   public User loginUser(String userName, String userPassword) {
+                     try {
+                         User user = jdbcTemplate.queryForObject("SELECT * FROM users WHERE userName=? AND userPassword=?\",
+                            new Object[]{userName, userPassword},
+                            BeanPropertyRowMapper.newInstance(User.class));
+                         return user;
+                     } catch (IncorrectResultSizeDataAccessException e) {
+                        return null;
+                     }
+                   }
+                </code>
+            </pre>
+
+            <p>However, if a SQL Injection string is sent to the method it does not work and null is returned. For example, the
+            method is sent a userName of "administrator' --" and a password of "" it returns a null object and it is not
+            displayed.</p>
+            This is because the SQL Parameterized Query statement has a placeholder for the userName and userPassword. It places the
+            two strings in the placeholders and does not allow the manipulation of the query. The SELECT statement the method
+            creates is:
+            <p class="section"><b>SELECT * FROM users WHERE userName='administrator --' AND userPassword =''</b></p>
+
+            <p>
+                The following User object is returned:
+            </p>
+            <table>
+                <tr>
+                    <th>User Id</th><th>User Name</th><th>User Password</th><th>User Email Address</th>
+                </tr>
+                <tr>
+                    <td th:text="${sqlInjectionCallToLoginMitigated?.id}"></td>
+                    <td th:text="${sqlInjectionCallToLoginMitigated?.userName}"></td>
+                    <td th:text="${sqlInjectionCallToLoginMitigated?.userPassword}"></td>
+                    <td th:text="${sqlInjectionCallToLoginMitigated?.userEmailAddress}"></td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

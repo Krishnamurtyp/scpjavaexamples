@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SCP Java Examples</title>
+    <link rel="stylesheet" th:href="@{/css/custom.css}"/>
+</head>
+<body>
+    <h1 class="mainTitle">Secure Coding Practices For Java</h1>
+    <h3 class="mainDescription">This is the Secure Coding Practices for Java web application.  This is a Restful Service written in Java using
+        Spring Boot.  Each vulnerability has a link below that will go to a web page to explain the vulnerability and
+        show examples of how the vulnerability is exploited.  It will also give examples of how to mitigate the
+        vulnerability.
+    </h3>
+
+    <p><a href="/sqlinjection" class="largeText">SQL Injection Mitigated with Parameterized Queries</a></p>
+    <p><a href="/sqlinjectionorm" class="largeText">SQL Injection Mitigated with Object Relational Mapper (ORM)</a></p>
+</body>
+</html>

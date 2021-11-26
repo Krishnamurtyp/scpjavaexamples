@@ -1,0 +1,30 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+}
+
+.mainTitle {
+   text-align: center;
+}
+.mainDescription {
+    margin-left: auto;
+    margin-right: auto;
+    width: 75em
+}
+.largeText {
+   font-size: 20px;
+   margin-left: 25px;
+}
+.section {
+    margin-left: 5em;
+    margin-right: 25em;
+}
+th, td {
+    padding-right: 15px;
+    border: 1px solid black
+}
+table {
+    margin-left: 2pc;
+    border: 1px solid black;
+}
+
